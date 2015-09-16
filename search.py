@@ -119,8 +119,44 @@ def iterativeDeepeningSearch(problem):
 
     Begin with a depth of 1 and increment depth by 1 at every step.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    depth = 1
+    while True:
+    	result = limitedDFS(problem, problem.getStartState(), depth, set(), [])
+    	if result == [-1]: #hit cutoff at this depth
+    		depth += 1
+    		continue
+    	elif result == [0]: #no solution found
+    		return []
+    	else: #solution found! (a list of actions is returned)
+    		return result
+
+def limitedDFS(problem, node, depth, explored, actions):
+	"""
+	A recursive implementation of a limited DFS to implement iterative deepening.
+	"""
+	if problem.goalTest(node):
+		return actions
+	elif depth == 0:
+		return [-1]
+	else:
+		cut_occurrence = False;
+		explored.add(node)
+		for move in problem.getActions(node):
+			child = problem.getResult(node, move)
+			if child in explored:
+				continue
+			actions.append(move)
+			result = limitedDFS(problem, child, depth - 1, explored, actions)
+			if result == [-1]:
+				actions.pop()
+				cut_occurrence = True
+				continue
+			elif result == [0]:
+				actions.pop()
+				continue
+			return result
+		return [-1] if cut_occurrence else [0]
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
