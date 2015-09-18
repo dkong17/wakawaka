@@ -160,8 +160,25 @@ def limitedDFS(problem, node, depth, explored, actions):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closedset = []
+    openset = util.PriorityQueue()
+    openset.push((problem.getStartState(), []), heuristic(problem.getStartState(), problem))
+
+    while not openset.isEmpty():
+    	node, actions = openset.pop()
+    	if node in closedset:
+    		continue
+    	if problem.goalTest(node):
+    		return
+    	closedset.append(node)
+
+    	for action in problem.getActions(node):
+    		child = problem.getResult(node, action)
+    		if not child in closedset:
+    			steps = actions + [action]
+    			f = problem.getCostOfActions(steps) + heuristic(child, problem)
+    			openset.push((child, steps), f)
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch

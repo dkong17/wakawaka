@@ -297,22 +297,22 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.startingPosition in self.corners:
+            return (self.startingPosition, set([self.startingPosition]))
+        return (self.startingPosition, set())
 
     def goalTest(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        position, touched = state
+        return position in self.corners and touched == set(self.corners)
 
     def getActions(self, state):
         """
@@ -341,8 +341,16 @@ class CornersProblem(search.SearchProblem):
         #   dx, dy = Actions.directionToVector(action)
         #   nextx, nexty = int(x + dx), int(y + dy)
         #   hitsWall = self.walls[nextx][nexty]
-
-        "*** YOUR CODE HERE ***"
+        (x, y), hitted = state
+        new_touch = set()|hitted
+        dx, dy = Actions.directionToVector(action)
+        nextx, nexty = int(x + dx), int(y + dy)
+        if self.walls[nextx][nexty] or self.walls[nextx][nexty]:
+            warnings.warn("Warning: checking the result of an invalid state, action pair.")
+            return state
+        elif (nextx, nexty) in self.corners and not (nextx, nexty) in hitted:
+            new_touch.add((nextx, nexty))
+        return ((nextx, nexty), new_touch)
 
     def getCost(self, state, action):
         """Given a state and an action, returns a cost of 1, which is
@@ -382,8 +390,21 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    return 0
+    # position, touched = state
+    # untouched = list(set(corners) - set(touched))    #list of untouched corners
+    # distCorners = 0
+    # if len(untouched) == 4:
+    #     distCorners = (self.walls.height-3) * 2 + (self.walls.width-3) * 2
+    # elif len(untouched) == 3:
+    #     distCorners = (self.walls.height-3) + (self.walls.width-3)
+    # elif len(untouched) == 2:
+    #     distCorners = abs(untouched[0][0] - untouched[1][0]) + abs(untouched[0][1] - untouched[1][1])
+    # toCorner = ''
+    # for corner in untouched:
+    #     temp = abs(position[0] - corner[0]) + abs(position[1] - corner[1])
+    #     if temp < toCorner: toCorner = temp
+    # return toCorner + distCorners
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
